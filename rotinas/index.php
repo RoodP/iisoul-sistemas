@@ -173,6 +173,45 @@ function salvar_editar($conexao){
     }
 }
 
+function editar_formulario($conexao){
+    try{
+        define('status', 'status');
+        define('msg', 'msg');
+        define('row','row');
+        $i = 0;
+            
+        $id = $_POST['id'];
+        $sql = "SELECT * FROM public.cadastro WHERE id_cadastro = $id";
+        $resultado = mysqli_query($conexao, $sql);
+        $row = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+        
+        $row[$i]['telefone']        = '(' . substr($row[$i]['telefone'], 0, 2) . ') ' . substr($row[$i]['telefone'], 2, 4) . '-' . substr($row[$i]['telefone'], 6, 4);
+        $row[$i]['celular']         = '(' . substr($row[$i]['celular'], 0, 2) . ') ' . substr($row[$i]['celular'], 2, 5) . '-' . substr($row[$i]['celular'], 7, 4);
+        $row[$i]['cep']             = substr($row[$i]['cep'], 0, 5) . '-' . substr($row[$i]['cep'], 5, 3);
+        $row[$i]['sexo']            = $row[$i]['sexo'] == 'M' ? 'Masculino' : 'Feminino';
+        $row[$i]['cpf']             = substr($row[$i]['cpf'], 0, 3) . '.' . substr($row[$i]['cpf'], 3, 3) . '.' . substr($row[$i]['cpf'], 6, 3) . '-' . substr($row[$i]['cpf'], 9, 2);
+        $row[$i]['rg']              = substr($row[$i]['rg'], 0, 2) . '.' . substr($row[$i]['rg'], 2, 3) . '.' . substr($row[$i]['rg'], 5, 3) . '-' . substr($row[$i]['rg'], 8, 1);
+        
+        
+
+        if ($resultado){
+            $resposta = array(status =>true, row => $row);
+        }else{
+            $mensagem = 'Erro ao buscar dados';
+            $resposta = array(status =>false, row => '', msg => $mensagem);
+            }
+
+        mysqli_close($conexao);
+        echo json_encode($resposta);
+
+    } catch (Exception $e){
+        $mensagem = 'Erro ao se comunicar com servidor ' . $e->getMessage();
+        $resposta = array(status => false, msg => $mensagem);
+        echo json_encode($resposta);
+    }
+    
+}
+
 function salvar_formulario($conexao){
 
     try{
@@ -307,45 +346,6 @@ function salvar_formulario($conexao){
         $resposta = array(status =>false, msg => $mensagem);
         echo json_encode($resposta);
     }
-}
-
-function editar_formulario($conexao){
-    try{
-        define('status', 'status');
-        define('msg', 'msg');
-        define('row','row');
-        $i = 0;
-            
-        $id = $_POST['id'];
-        $sql = "SELECT * FROM public.cadastro WHERE id_cadastro = $id";
-        $resultado = mysqli_query($conexao, $sql);
-        $row = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
-        
-        $row[$i]['telefone']        = '(' . substr($row[$i]['telefone'], 0, 2) . ') ' . substr($row[$i]['telefone'], 2, 4) . '-' . substr($row[$i]['telefone'], 6, 4);
-        $row[$i]['celular']         = '(' . substr($row[$i]['celular'], 0, 2) . ') ' . substr($row[$i]['celular'], 2, 5) . '-' . substr($row[$i]['celular'], 7, 4);
-        $row[$i]['cep']             = substr($row[$i]['cep'], 0, 5) . '-' . substr($row[$i]['cep'], 5, 3);
-        $row[$i]['sexo']            = $row[$i]['sexo'] == 'M' ? 'Masculino' : 'Feminino';
-        $row[$i]['cpf']             = substr($row[$i]['cpf'], 0, 3) . '.' . substr($row[$i]['cpf'], 3, 3) . '.' . substr($row[$i]['cpf'], 6, 3) . '-' . substr($row[$i]['cpf'], 9, 2);
-        $row[$i]['rg']              = substr($row[$i]['rg'], 0, 2) . '.' . substr($row[$i]['rg'], 2, 3) . '.' . substr($row[$i]['rg'], 5, 3) . '-' . substr($row[$i]['rg'], 8, 1);
-        
-        
-
-        if ($resultado){
-            $resposta = array(status =>true, row => $row);
-        }else{
-            $mensagem = 'Erro ao buscar dados';
-            $resposta = array(status =>false, row => '', msg => $mensagem);
-            }
-
-        mysqli_close($conexao);
-        echo json_encode($resposta);
-
-    } catch (Exception $e){
-        $mensagem = 'Erro ao se comunicar com servidor ' . $e->getMessage();
-        $resposta = array(status => false, msg => $mensagem);
-        echo json_encode($resposta);
-    }
-    
 }
 
 function excluir_formulario($conexao){
