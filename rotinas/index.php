@@ -11,24 +11,20 @@ switch ($acao){
     case 'buscar_dados':
         buscar_dados($conexao);
         break;
-    case 'excluir_formulario':
-        excluir_formulario($conexao);
-        break;
     case 'editar_formulario':
         editar_formulario($conexao);
         break;  
-    case 'salvar_editar':
-        salvar_editar($conexao);
-        break;  
+     case 'excluir_formulario':
+        excluir_formulario($conexao);
+        break;
 
 }
 
-function salvar_editar($conexao){
-
+function editar_formulario($conexao){
     try{
         define('status', 'status');
         define('msg', 'msg');
-        
+
         $id                 = $_POST['id'];
         $nome_completo      = $_POST['nome_completo'];
         $data_nascimento    = $_POST['data_nascimento'];
@@ -61,6 +57,13 @@ function salvar_editar($conexao){
             $sexo = 'M';
         }else{
             $sexo = 'F';
+        }
+
+        if($id == ''){
+            $mensagem = 'ID não indentificado, porfavor entre em contato com suporte!';
+            $resposta = array(status => false, msg => $mensagem);
+            return json_encode($resposta);
+            exit;
         }
 
         if($nome_completo == ''){
@@ -151,16 +154,16 @@ function salvar_editar($conexao){
                         cep             = '$cep',
                         sexo            = '$sexo'
                   WHERE id_cadastro     = $id";
-        
-        $resultado = mysqli_query($conexao, $sql);
-        
-        if ($resultado){
-            $mensagem = 'Atualização feita com sucesso';
-            $resposta = array(status =>true, msg => $mensagem);
-        }else{
-            $mensagem = 'Erro ao atualizar';
-            $resposta = array(status =>false, msg => $mensagem);
-            }
+            
+            $resultado = mysqli_query($conexao, $sql);
+            
+            if ($resultado){
+                $mensagem = 'Atualização feita com sucesso';
+                $resposta = array(status =>true, msg => $mensagem);
+            }else{
+                $mensagem = 'Erro ao atualizar';
+                $resposta = array(status =>false, msg => $mensagem);
+                }
 
         mysqli_close($conexao);
         echo json_encode($resposta);
@@ -171,45 +174,7 @@ function salvar_editar($conexao){
         $resposta = array(status =>false, msg => $mensagem);
         echo json_encode($resposta);
     }
-}
 
-function editar_formulario($conexao){
-    try{
-        define('status', 'status');
-        define('msg', 'msg');
-        define('row','row');
-        $i = 0;
-            
-        $id = $_POST['id'];
-        $sql = "SELECT * FROM public.cadastro WHERE id_cadastro = $id";
-        $resultado = mysqli_query($conexao, $sql);
-        $row = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
-        
-        $row[$i]['telefone']        = '(' . substr($row[$i]['telefone'], 0, 2) . ') ' . substr($row[$i]['telefone'], 2, 4) . '-' . substr($row[$i]['telefone'], 6, 4);
-        $row[$i]['celular']         = '(' . substr($row[$i]['celular'], 0, 2) . ') ' . substr($row[$i]['celular'], 2, 5) . '-' . substr($row[$i]['celular'], 7, 4);
-        $row[$i]['cep']             = substr($row[$i]['cep'], 0, 5) . '-' . substr($row[$i]['cep'], 5, 3);
-        $row[$i]['sexo']            = $row[$i]['sexo'] == 'M' ? 'Masculino' : 'Feminino';
-        $row[$i]['cpf']             = substr($row[$i]['cpf'], 0, 3) . '.' . substr($row[$i]['cpf'], 3, 3) . '.' . substr($row[$i]['cpf'], 6, 3) . '-' . substr($row[$i]['cpf'], 9, 2);
-        $row[$i]['rg']              = substr($row[$i]['rg'], 0, 2) . '.' . substr($row[$i]['rg'], 2, 3) . '.' . substr($row[$i]['rg'], 5, 3) . '-' . substr($row[$i]['rg'], 8, 1);
-        
-        
-
-        if ($resultado){
-            $resposta = array(status =>true, row => $row);
-        }else{
-            $mensagem = 'Erro ao buscar dados';
-            $resposta = array(status =>false, row => '', msg => $mensagem);
-            }
-
-        mysqli_close($conexao);
-        echo json_encode($resposta);
-
-    } catch (Exception $e){
-        $mensagem = 'Erro ao se comunicar com servidor ' . $e->getMessage();
-        $resposta = array(status => false, msg => $mensagem);
-        echo json_encode($resposta);
-    }
-    
 }
 
 function salvar_formulario($conexao){
@@ -385,12 +350,21 @@ function buscar_dados($conexao){
         define('status', 'status');
         define('msg', 'msg');
         define('row', 'row');
+ 
+        $id = $_POST['id'];
 
-        $sql = "SELECT * FROM public.cadastro WHERE situacao = 1";
+        if($id > 0 ){
+            $clausula = " AND id_cadastro = $id";
+        }else{
+            $clausula = '';
+        }
+
+        $sql = "SELECT * FROM public.cadastro WHERE situacao = 1 $clausula";
         $resultado = mysqli_query($conexao, $sql);
         $row = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
 
         for ($i = 0; $i < count($row); $i++) {
+            $row[$i]['nascimento']      = $row[$i]['data_nascimento'];
             $row[$i]['data_nascimento'] = date('d/m/Y', strtotime($row[$i]['data_nascimento']));
             $row[$i]['telefone']        = '(' . substr($row[$i]['telefone'], 0, 2) . ') ' . substr($row[$i]['telefone'], 2, 4) . '-' . substr($row[$i]['telefone'], 6, 4);
             $row[$i]['celular']         = '(' . substr($row[$i]['celular'], 0, 2) . ') ' . substr($row[$i]['celular'], 2, 5) . '-' . substr($row[$i]['celular'], 7, 4);
