@@ -180,8 +180,7 @@ function excluir_formulario(id){
 
 function editar(){
 
-    let id = $('#valor_id_editar').val();
-
+    let id              = $('#valor_id_editar').val();
     let nome_completo   = $('#nome_edit').val();
     let data_nascimento = $('#nascimento_edit').val();
     let cpf             = $('#cpf_edit').val();
@@ -260,13 +259,11 @@ function editar(){
                 complemento     : complemento,   
                 cep             : cep,           
                 sexo            : sexo,  
-                acao            : btoa ('salvar_editar')        
+                acao            : btoa ('editar_formulario')        
             },
             success: function(response){
-                //console.log(response)
                 if(response.status == true){
                     alert_page('Sucesso!', response.msg, 'success');
-                    
                     $('#md_editar_pessoa_fisica').modal('hide');
                     buscar_dados();
                 }else{
@@ -291,13 +288,13 @@ function editar_formulario(id){
         dataType:"json",
         data:{    
             id            : id,  
-            acao          : btoa ('editar_formulario')        
+            acao          : btoa ('buscar_dados')        
         },
         success: function(response){
             
             if(response.status == true){
                 $('#nome_edit').val(response.row[0].nome_completo);
-                $('#nascimento_edit').val(response.row[0].data_nascimento);
+                $('#nascimento_edit').val(response.row[0].nascimento);
                 $('#cpf_edit').val(response.row[0].cpf);
                 $('#rg_edit').val(response.row[0].rg);
                 $('#telefone_edit').val(response.row[0].telefone);
