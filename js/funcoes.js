@@ -54,6 +54,7 @@ function alert_page(title,message,type){
         onClosed: null,
         icon_type: 'class',
         
+        
     });
 
 }
