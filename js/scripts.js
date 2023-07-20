@@ -18,6 +18,10 @@ document.write('<script type="text/javascript" src="https://cdnjs.cloudflare.com
 //scripts JS
 document.write('<script src="js/funcoes.js" type="text/javascript"></script>');
 
+//scripts MODES JS
+document.write('<script src="js/color_modes.js" type="text/javascript"></script>');
+
+
 //tables export JS
 document.write('<script src="js/table_export.js" type="text/javascript"></script>');
 
