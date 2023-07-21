@@ -1,7 +1,7 @@
-function logar(){
+function login(){
     
-    let email = $('#email_lg').val();
-    let senha = $('#senha_lg').val();
+    let email = $('#email_login').val();
+    let senha = $('#email_senha').val();
 
         if(email == ''){
             alert_page('Erro', 'verifique seu email', 'warning');
@@ -18,21 +18,17 @@ function logar(){
         dataType:"json",
         data:{
             email   : email,
-            senha   : btoa (senha),    
-            acao    : btoa ('logar')        
+            senha   : senha,    
+            acao    : btoa ('login')        
         },
-        success: function(response){
+        success: function(data){
             
-            if(response.status == true){
-                alert_page('Sucesso!', response.msg, 'success');
-                window.location.href = "http://iisoul-formulario.local/";
+            if(data.status == true){ 
+                window.location.href = "http://iisoul-formulario.local/index.php";
+                alert_page('Ok!', data.msg, 'sucsess');
             }else{
-                alert_page('Erro!', response.msg, 'warning');
+                alert_page('Erro!', data.msg, 'warning');
             }
         },
-        error: function(e){
-            alert_page('Erro!', e, 'warning');
-
-        }
     });
 }
